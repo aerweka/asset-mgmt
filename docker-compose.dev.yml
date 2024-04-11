@@ -12,7 +12,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
       POSTGRES_DB: asset-mgmt
+      # POSTGRES_EXTENSIONS: uuid-ossp
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - ./database/scripts:/docker-entrypoint-initdb.d
     ports:
       - 5432:5432

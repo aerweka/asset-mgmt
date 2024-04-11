@@ -5,7 +5,7 @@ import (
 
 	"asset-management.com/config"
 	"asset-management.com/database"
-	"asset-management.com/router"
+	"asset-management.com/internal/server"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -27,7 +27,7 @@ func main() {
 		panic(fmt.Sprintf("error: %v", err))
 	}
 
-	router.NewRoute(app)
+	server.NewHandler(app, db)
 
 	app.Listen(":3000")
 }

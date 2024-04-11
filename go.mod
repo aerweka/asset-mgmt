@@ -11,8 +11,10 @@ require (
 	github.com/bep/godartsass/v2 v2.0.0 // indirect
 	github.com/bep/golibsass v1.1.1 // indirect
 	github.com/cli/safeexec v1.0.1 // indirect
+	github.com/cloudinary/cloudinary-go/v2 v2.7.0 // indirect
 	github.com/cosmtrek/air v1.51.0 // indirect
 	github.com/creack/pty v1.1.21 // indirect
+	github.com/creasty/defaults v1.5.1 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
@@ -20,7 +22,7 @@ require (
 	github.com/gofiber/utils v0.0.10 // indirect
 	github.com/gohugoio/hugo v0.124.1 // indirect
 	github.com/google/uuid v1.5.0 // indirect
-	github.com/gorilla/schema v1.1.0 // indirect
+	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.4.3 // indirect
