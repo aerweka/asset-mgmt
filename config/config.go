@@ -14,6 +14,11 @@ type Config struct {
 		Password string `yaml:"password"`
 		Name     string `yaml:"name"`
 	}
+	Cloudinary struct {
+		CloudName string `yaml:"cloud_name"`
+		APIKey    string `yaml:"api_key"`
+		APISecret string `yaml:"api_secret"`
+	}
 }
 
 func Init() (*Config, error) {
