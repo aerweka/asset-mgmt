@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"strings"
+
 	"asset-management.com/internal/asset-mgmt/document"
 	"asset-management.com/internal/model"
 	"github.com/gofiber/fiber/v2"
@@ -18,32 +20,34 @@ func NewDocumentHandler(uc document.Usecase) document.Handlers {
 }
 
 func (h *documentHandler) Index(ctx *fiber.Ctx) error {
-	var documents []model.Document
-	documents, err := h.documentUC.Index(ctx)
+	activaCode := ctx.Query("activa_code")
+	var (
+		documents []*model.Document
+		err       error
+	)
+
+	documents, err = h.documentUC.Index(ctx, activaCode)
+
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error retrieving documents", "data": err.Error()})
-	}
-
-	if len(documents) == 0 {
-		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "No documents found", "data": nil})
 	}
 
 	return ctx.JSON(fiber.Map{"message": "Documents retrieved successfully", "data": documents})
 }
 
 func (h *documentHandler) CreateDocument(ctx *fiber.Ctx) error {
-	document := new(model.Document)
+	document := new(model.DocumentRequest)
 	err := ctx.BodyParser(document)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error parsing body", "data": err.Error()})
 	}
 
-	err = h.documentUC.CreateDocument(ctx, document)
+	res, err := h.documentUC.CreateDocument(ctx, document)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error creating document", "data": err.Error()})
 	}
 
-	return ctx.JSON(fiber.Map{"message": "Document created successfully", "data": document})
+	return ctx.JSON(fiber.Map{"message": "Document created successfully", "data": res})
 }
 
 func (h *documentHandler) GetDocument(ctx *fiber.Ctx) error {
@@ -55,7 +59,11 @@ func (h *documentHandler) GetDocument(ctx *fiber.Ctx) error {
 
 	document, err := h.documentUC.GetDocument(ctx, parsedId)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error retrieving document", "data": err.Error()})
+		httpCode := fiber.StatusInternalServerError
+		if strings.Contains(err.Error(), "not found") {
+			httpCode = fiber.StatusNotFound
+		}
+		return ctx.Status(httpCode).JSON(fiber.Map{"message": "Error retrieving document", "data": err.Error()})
 	}
 
 	return ctx.JSON(fiber.Map{"message": "Document retrieved successfully", "data": document})
@@ -74,10 +82,14 @@ func (h *documentHandler) UpdateDocument(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Invalid ID", "data": err.Error()})
 	}
 
-	err = h.documentUC.UpdateDocument(ctx, parsedId)
+	updatedDocument, err := h.documentUC.UpdateDocument(ctx, document, parsedId)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error updating document", "data": err.Error()})
+		httpCode := fiber.StatusInternalServerError
+		if strings.Contains(err.Error(), "not found") {
+			httpCode = fiber.StatusNotFound
+		}
+		return ctx.Status(httpCode).JSON(fiber.Map{"message": "Error updating document", "data": err.Error()})
 	}
 
-	return ctx.JSON(fiber.Map{"message": "Document updated successfully", "data": document})
+	return ctx.JSON(fiber.Map{"message": "Document updated successfully", "data": updatedDocument})
 }

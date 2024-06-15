@@ -11,5 +11,5 @@ func NewDocumentRoutes(api fiber.Router, h document.Handlers) {
 	document.Get("/", h.Index)
 	document.Get("/:id", h.GetDocument)
 	document.Post("/", h.CreateDocument)
-	document.Put("/:id", h.UpdateDocument)
+	document.Patch("/:id", h.UpdateDocument)
 }

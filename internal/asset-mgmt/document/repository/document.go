@@ -11,17 +11,23 @@ func NewDocumentRepository(db *gorm.DB) document.Repository {
 	return &documentRepo{
 		db: db,
 	}
-
 }
 
 type documentRepo struct {
 	db *gorm.DB
 }
 
-func (d *documentRepo) GetIndex() ([]model.Document, error) {
-	var documents []model.Document
+func (d *documentRepo) GetIndex(activaCode string) ([]*model.Document, error) {
+	var documents []*model.Document
+	var condition map[string]interface{}
 
-	res := d.db.Find(&documents)
+	if activaCode != "" {
+		condition = map[string]interface{}{
+			"activa_code": activaCode,
+		}
+	}
+
+	res := d.db.Where(condition).Find(&documents)
 	if res.Error != nil {
 		return nil, res.Error
 	}
@@ -38,4 +44,21 @@ func (d *documentRepo) GetDocument(id uuid.UUID) (*model.Document, error) {
 	}
 
 	return &document, nil
+}
+
+func (d *documentRepo) CreateDocument(documents []*model.Document) error {
+	res := d.db.Create(documents)
+	if res.Error != nil {
+		return res.Error
+	}
+	return nil
+}
+
+func (d *documentRepo) UpdateDocument(id uuid.UUID, document *model.Document) error {
+	res := d.db.Save(document)
+	if res.Error != nil {
+		return res.Error
+	}
+
+	return nil
 }

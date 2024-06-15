@@ -4,7 +4,7 @@ GOBUILD = $(GOCMD) build
 GOCLEAN = $(GOCMD) clean
 GOTEST = $(GOCMD) test
 GOGET = $(GOCMD) get
-GORUN = 
+GORUN = $(GOCMD) run
 
 # Build target
 BINARY_NAME = ./cmd
@@ -27,5 +27,16 @@ run:
 
 run-dev:
 	reflex -s -r '\.go$$' go run cmd/main.go
+
+db-down:
+	sudo docker compose -f ./docker-compose.dev.yml down
+
+db-up:
+	sudo docker compose -f ./docker-compose.dev.yml up -d
+
+http:
+	$(GORUN) cmd/main.go
+
+reset-db: db-down db-up
 
 .PHONY: all build test clean run

@@ -7,8 +7,8 @@ import (
 )
 
 type Usecase interface {
-	Index(*fiber.Ctx) ([]model.Document, error)
-	CreateDocument(*fiber.Ctx, *model.Document) error
+	Index(*fiber.Ctx, string) ([]*model.Document, error)
+	CreateDocument(*fiber.Ctx, *model.DocumentRequest) ([]*model.Document, error)
 	GetDocument(*fiber.Ctx, uuid.UUID) (*model.Document, error)
-	UpdateDocument(*fiber.Ctx, uuid.UUID) error
+	UpdateDocument(*fiber.Ctx, *model.Document, uuid.UUID) (*model.Document, error)
 }
