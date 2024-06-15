@@ -6,6 +6,8 @@ import (
 )
 
 type Repository interface {
-	GetIndex() ([]model.Document, error)
+	GetIndex(string) ([]*model.Document, error)
 	GetDocument(uuid.UUID) (*model.Document, error)
+	CreateDocument([]*model.Document) error
+	UpdateDocument(id uuid.UUID, document *model.Document) error
 }

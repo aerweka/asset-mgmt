@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"asset-management.com/config"
-	"asset-management.com/database"
 	"asset-management.com/internal/server"
+	"asset-management.com/pkg/cloudinary"
+	"asset-management.com/pkg/database"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -27,7 +28,12 @@ func main() {
 		panic(fmt.Sprintf("error: %v", err))
 	}
 
-	server.NewHandler(app, db)
+	cloudinaryApp, err := cloudinary.InitInstance(*cfg)
+	if err != nil {
+		panic(fmt.Sprintf("error: %v", err))
+	}
+
+	server.NewHandler(app, db, cloudinaryApp)
 
 	app.Listen(":3000")
 }

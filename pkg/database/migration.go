@@ -6,7 +6,10 @@ import (
 )
 
 func AutoMigrate(db *gorm.DB) error {
-	err := db.AutoMigrate(&model.Document{})
+	err := db.AutoMigrate(
+		&model.Document{},
+		&model.PBB{},
+	)
 	if err != nil {
 		return err
 	}
