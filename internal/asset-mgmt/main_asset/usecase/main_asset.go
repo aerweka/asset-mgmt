@@ -3,6 +3,7 @@ package usecase
 import (
 	"errors"
 
+	"asset-management.com/internal/asset-mgmt/document"
 	mainasset "asset-management.com/internal/asset-mgmt/main_asset"
 	"asset-management.com/internal/model"
 	"github.com/gofiber/fiber/v2"
@@ -11,99 +12,90 @@ import (
 
 type MainAssetUCParam struct {
 	MainAssetRepository mainasset.Repository
-	// Cloudinary          *cloudinary.Cloudinary
+	DocumentRepo document.Repository
 }
 
 func NewMainAssetUsecase(param *MainAssetUCParam) mainasset.Usecase {
 	return &mainAssetUC{
-		pbbRepo: param.MainAssetRepository,
+		mainAssetrepo: param.MainAssetRepository,
+		documentRepo: param.DocumentRepo,
 	}
 }
 
 type mainAssetUC struct {
-	pbbRepo mainasset.Repository
+	mainAssetrepo mainasset.Repository
+	documentRepo document.Repository
 }
 
-func (uc *mainAssetUC) Index(c *fiber.Ctx) ([]*model.PBB, error) {
-	documents, err := uc.pbbRepo.GetIndex()
+func (uc *mainAssetUC) Index(c *fiber.Ctx) ([]*model.MainAsset, error) {
+	mainAssets, err := uc.mainAssetrepo.GetIndex()
 	if err != nil {
 		return nil, err
 	}
 
-	return documents, nil
+	return mainAssets, nil
 }
 
-func (uc *mainAssetUC) CreateMainAsset(c *fiber.Ctx, pbb *model.PBBRequest) (*model.PBB, error) {
-	newPbb := &model.PBB{
+func (uc *mainAssetUC) CreateMainAsset(c *fiber.Ctx, mainAsset *model.MainAssetRequest) (*model.MainAsset, error) {
+	_, err := uc.documentRepo.GetDocument(mainAsset.DocumentID)
+	if err != nil {
+		return nil, err
+	}
+
+	newMainAsset := &model.MainAsset{
 		ID:           uuid.New(),
-		Nop:          pbb.Nop,
-		LandArea:     pbb.LandArea,
-		BuildingArea: pbb.BuildingArea,
-		Road:         pbb.Road,
+		DocumentID:   mainAsset.DocumentID,
+		Category:     mainAsset.Category,
+		AssetTotal:   mainAsset.AssetTotal,
+		District:     mainAsset.District,
+		SubDistrict:  mainAsset.SubDistrict,
+		UrbanVillage: mainAsset.UrbanVillage,
 	}
 
-	if pbb.Alley.Valid {
-		newPbb.Alley = pbb.Alley.String
-	}
-
-	if pbb.Number.Valid {
-		newPbb.Number = pbb.Number.String
-	}
-
-	if pbb.AdditionalNumber.Valid {
-		newPbb.AdditionalNumber = pbb.AdditionalNumber.String
-	}
-
-	if pbb.Description.Valid {
-		newPbb.Description = pbb.Description.String
-	}
-
-	err := uc.pbbRepo.CreateMainAsset(newPbb)
+	err = uc.mainAssetrepo.CreateMainAsset(newMainAsset)
 	if err != nil {
 		return nil, err
 	}
-	return newPbb, nil
+	return newMainAsset, nil
 }
 
-func (uc *mainAssetUC) GetMainAsset(c *fiber.Ctx, id uuid.UUID) (*model.PBB, error) {
-	pbb, err := uc.pbbRepo.GetMainAsset(id)
+func (uc *mainAssetUC) GetMainAsset(c *fiber.Ctx, id uuid.UUID) (*model.MainAsset, error) {
+	mainAsset, err := uc.mainAssetrepo.GetMainAsset(id)
 	if err != nil {
 		return nil, err
 	}
 
-	return pbb, nil
+	return mainAsset, nil
 }
 
-func (uc *mainAssetUC) UpdateMainAsset(c *fiber.Ctx, newData *model.PBB, id uuid.UUID) (*model.PBB, error) {
-	pbb, err := uc.pbbRepo.GetMainAsset(id)
+func (uc *mainAssetUC) UpdateMainAsset(c *fiber.Ctx, newData *model.MainAsset, id uuid.UUID) (*model.MainAsset, error) {
+	mainAsset, err := uc.mainAssetrepo.GetMainAsset(id)
 	if err != nil {
 		return nil, err
 	}
 
-	if pbb.ID == uuid.Nil {
+	if mainAsset.ID == uuid.Nil {
 		return nil, errors.New("pbb not found")
 	}
 
 	// check if newData is different from current data
-	if pbb.CheckIfSame(newData) {
-		return pbb, nil
+	if mainAsset.CheckIfSame(newData) {
+		return mainAsset, nil
 	}
 
 	// update document
-	pbb.Nop = newData.Nop
-	pbb.LandArea = newData.LandArea
-	pbb.BuildingArea = newData.BuildingArea
-	pbb.Road = newData.Road
-	pbb.Alley = newData.Alley
-	pbb.AdditionalNumber = newData.AdditionalNumber
-	pbb.Number = newData.Number
-	pbb.Description = newData.Description
+	mainAsset.DocumentID = newData.DocumentID
+	mainAsset.AssetTotal = newData.AssetTotal
+	mainAsset.Category = newData.Category
+	mainAsset.District = newData.District
+	mainAsset.SubDistrict = newData.SubDistrict
+	mainAsset.UrbanVillage = newData.UrbanVillage
 
 	// var updateDocumentData model.UpdateDocument
-	err = uc.pbbRepo.UpdateMainAsset(id, pbb)
+	err = uc.mainAssetrepo.UpdateMainAsset(id, mainAsset)
 	if err != nil {
 		return nil, err
 	}
 
-	return pbb, nil
+	return mainAsset, nil
 }

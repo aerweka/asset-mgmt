@@ -21,32 +21,36 @@ func NewMainAssetHandler(uc mainasset.Usecase) mainasset.Handlers {
 
 func (h *mainAssetHandler) Index(ctx *fiber.Ctx) error {
 	var (
-		pbb []*model.PBB
-		err error
+		mainAsset []*model.MainAsset
+		err       error
 	)
 
-	pbb, err = h.mainAssetUC.Index(ctx)
+	mainAsset, err = h.mainAssetUC.Index(ctx)
 
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error retrieving pbbs", "data": err.Error()})
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error retrieving main assets", "data": err.Error()})
 	}
 
-	return ctx.JSON(fiber.Map{"message": "Documents retrieved successfully", "data": pbb})
+	return ctx.JSON(fiber.Map{"message": "Main assets retrieved successfully", "data": mainAsset})
 }
 
 func (h *mainAssetHandler) CreateMainAsset(ctx *fiber.Ctx) error {
-	pbb := new(model.PBBRequest)
-	err := ctx.BodyParser(pbb)
+	mainAsset := new(model.MainAssetRequest)
+	err := ctx.BodyParser(mainAsset)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error parsing body", "data": err.Error()})
 	}
 
-	res, err := h.mainAssetUC.CreateMainAsset(ctx, pbb)
+	res, err := h.mainAssetUC.CreateMainAsset(ctx, mainAsset)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error creating pbb", "data": err.Error()})
+		httpCode := fiber.StatusInternalServerError
+		if strings.Contains(err.Error(), "not found") {
+			httpCode = fiber.StatusNotFound
+		}
+		return ctx.Status(httpCode).JSON(fiber.Map{"message": "Error creating main asset", "data": err.Error()})
 	}
 
-	return ctx.JSON(fiber.Map{"message": "PBB created successfully", "data": res})
+	return ctx.JSON(fiber.Map{"message": "Main asset created successfully", "data": res})
 }
 
 func (h *mainAssetHandler) GetMainAsset(ctx *fiber.Ctx) error {
@@ -62,15 +66,15 @@ func (h *mainAssetHandler) GetMainAsset(ctx *fiber.Ctx) error {
 		if strings.Contains(err.Error(), "not found") {
 			httpCode = fiber.StatusNotFound
 		}
-		return ctx.Status(httpCode).JSON(fiber.Map{"message": "Error retrieving pbb", "data": err.Error()})
+		return ctx.Status(httpCode).JSON(fiber.Map{"message": "Error retrieving main asset", "data": err.Error()})
 	}
 
-	return ctx.JSON(fiber.Map{"message": "PBB retrieved successfully", "data": pbb})
+	return ctx.JSON(fiber.Map{"message": "Main asset retrieved successfully", "data": pbb})
 }
 
 func (h *mainAssetHandler) UpdateMainAsset(ctx *fiber.Ctx) error {
-	pbb := new(model.PBB)
-	err := ctx.BodyParser(pbb)
+	mainAsset := new(model.MainAsset)
+	err := ctx.BodyParser(mainAsset)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error parsing body", "data": err.Error()})
 	}
@@ -81,14 +85,14 @@ func (h *mainAssetHandler) UpdateMainAsset(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Invalid ID", "data": err.Error()})
 	}
 
-	updatedPbb, err := h.mainAssetUC.UpdateMainAsset(ctx, pbb, parsedId)
+	updatedMainAsset, err := h.mainAssetUC.UpdateMainAsset(ctx, mainAsset, parsedId)
 	if err != nil {
 		httpCode := fiber.StatusInternalServerError
 		if strings.Contains(err.Error(), "not found") {
 			httpCode = fiber.StatusNotFound
 		}
-		return ctx.Status(httpCode).JSON(fiber.Map{"message": "Error updating pbb", "data": err.Error()})
+		return ctx.Status(httpCode).JSON(fiber.Map{"message": "Error updating main asset", "data": err.Error()})
 	}
 
-	return ctx.JSON(fiber.Map{"message": "PBB updated successfully", "data": updatedPbb})
+	return ctx.JSON(fiber.Map{"message": "Main asset updated successfully", "data": updatedMainAsset})
 }

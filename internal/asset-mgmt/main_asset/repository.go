@@ -6,8 +6,8 @@ import (
 )
 
 type Repository interface {
-	GetIndex() ([]*model.PBB, error)
-	GetMainAsset(uuid.UUID) (*model.PBB, error)
-	CreateMainAsset(*model.PBB) error
-	UpdateMainAsset(id uuid.UUID, document *model.PBB) error
+	GetIndex() ([]*model.MainAsset, error)
+	GetMainAsset(uuid.UUID) (*model.MainAsset, error)
+	CreateMainAsset(*model.MainAsset) error
+	UpdateMainAsset(id uuid.UUID, document *model.MainAsset) error
 }

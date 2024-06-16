@@ -7,8 +7,8 @@ import (
 )
 
 type Usecase interface {
-	Index(*fiber.Ctx) ([]*model.PBB, error)
-	CreateMainAsset(*fiber.Ctx, *model.PBBRequest) (*model.PBB, error)
-	GetMainAsset(*fiber.Ctx, uuid.UUID) (*model.PBB, error)
-	UpdateMainAsset(*fiber.Ctx, *model.PBB, uuid.UUID) (*model.PBB, error)
+	Index(*fiber.Ctx) ([]*model.MainAsset, error)
+	CreateMainAsset(*fiber.Ctx, *model.MainAssetRequest) (*model.MainAsset, error)
+	GetMainAsset(*fiber.Ctx, uuid.UUID) (*model.MainAsset, error)
+	UpdateMainAsset(*fiber.Ctx, *model.MainAsset, uuid.UUID) (*model.MainAsset, error)
 }

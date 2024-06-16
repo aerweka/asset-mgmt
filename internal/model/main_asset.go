@@ -20,3 +20,24 @@ type MainAsset struct {
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
 }
+
+func (m MainAsset) CheckIfSame(newData *MainAsset) bool {
+	if m.DocumentID == newData.DocumentID &&
+		m.Category == newData.Category &&
+		m.AssetTotal == newData.AssetTotal &&
+		m.District == newData.District &&
+		m.SubDistrict == newData.SubDistrict &&
+		m.UrbanVillage == newData.UrbanVillage {
+		return true
+	}
+	return false
+}
+
+type MainAssetRequest struct {
+	DocumentID   uuid.UUID `json:"document_id"`
+	Category     string    `json:"category"`
+	AssetTotal   int8      `json:"asset_total"`
+	District     string    `json:"district"`
+	SubDistrict  string    `json:"sub_district"`
+	UrbanVillage string    `json:"urban_village"`
+}
