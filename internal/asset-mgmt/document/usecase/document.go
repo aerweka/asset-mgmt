@@ -29,8 +29,8 @@ type documentUC struct {
 	cloudinary   *cloudinary.Cloudinary
 }
 
-func (uc *documentUC) Index(c *fiber.Ctx, activaCode string) ([]*model.Document, error) {
-	documents, err := uc.documentRepo.GetIndex(activaCode)
+func (uc *documentUC) Index(c *fiber.Ctx, queries map[string]string) ([]*model.Document, error) {
+	documents, err := uc.documentRepo.GetIndex(queries)
 	if err != nil {
 		return nil, err
 	}

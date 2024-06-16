@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func NewDocumentRoutes(api fiber.Router, h pbb.Handlers) {
+func NewPbbRoutes(api fiber.Router, h pbb.Handlers) {
 	pbb := api.Group("/pbb")
 
 	pbb.Get("/", h.Index)

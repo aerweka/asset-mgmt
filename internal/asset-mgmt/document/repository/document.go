@@ -17,17 +17,9 @@ type documentRepo struct {
 	db *gorm.DB
 }
 
-func (d *documentRepo) GetIndex(activaCode string) ([]*model.Document, error) {
+func (d *documentRepo) GetIndex(queries map[string]string) ([]*model.Document, error) {
 	var documents []*model.Document
-	var condition map[string]interface{}
-
-	if activaCode != "" {
-		condition = map[string]interface{}{
-			"activa_code": activaCode,
-		}
-	}
-
-	res := d.db.Where(condition).Find(&documents)
+	res := d.db.Where(queries).Find(&documents)
 	if res.Error != nil {
 		return nil, res.Error
 	}
