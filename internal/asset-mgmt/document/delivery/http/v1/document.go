@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"reflect"
 	"strings"
 
 	"asset-management.com/internal/asset-mgmt/document"
@@ -20,13 +21,28 @@ func NewDocumentHandler(uc document.Usecase) document.Handlers {
 }
 
 func (h *documentHandler) Index(ctx *fiber.Ctx) error {
-	activaCode := ctx.Query("activa_code")
+	queries := ctx.Queries()
+	if len(queries) > 0 {
+		documentStruct := reflect.TypeOf(model.Document{})
+		found := false
+		for i := 0; i < documentStruct.NumField(); i++ {
+			field := documentStruct.Field(i)
+			tag := field.Tag.Get("json")
+			if _, ok := queries[tag]; ok {
+				found = true
+			}
+		}
+		if !found {
+			return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Error retrieving documents", "data": "Field isn't there"})
+		}
+	}
+
 	var (
 		documents []*model.Document
 		err       error
 	)
 
-	documents, err = h.documentUC.Index(ctx, activaCode)
+	documents, err = h.documentUC.Index(ctx, queries)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error retrieving documents", "data": err.Error()})

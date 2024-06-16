@@ -13,7 +13,7 @@ type pbbHandler struct {
 	pbbUC pbb.Usecase
 }
 
-func NewDocumentHandler(uc pbb.Usecase) pbb.Handlers {
+func NewPbbHandler(uc pbb.Usecase) pbb.Handlers {
 	return &pbbHandler{
 		pbbUC: uc,
 	}
